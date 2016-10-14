@@ -5,9 +5,13 @@ library(dplyr)
 library(tidyr)
 library(ReporteRs)
 
-time <- Sys.time()
+# the script is made to scrape data from forum.menopausechitchat.com. The process is simple: write a loop that jump from page to page,
+# thread to thread and get each comments from each topics. The raw texts are then put into word documents.
 
-# get the login url
+
+
+
+# get the login url ------------
 url2 <- "http://forum.menopausechitchat.com/main/authorization/signIn?target=http%3A%2F%2Fforum.menopausechitchat.com%2F"
 
 # Initiate session using rvest
@@ -28,18 +32,21 @@ login <- session %>%
 logged_in <- session %>% 
   submit_form(login)
 
+# Loop ----------------
+
+# Create empty document
 mydoc <- docx()
 
-# jump to the first site that is sorted by most  recent
-for (m in 1 : 207)
+# jump to the first site that is sorted by most recent (there are 207 sites)
+for (m in 1 : 210)
 {
   
   diss <- logged_in %>% 
     jump_to(paste('http://forum.menopausechitchat.com/forum?sort=mostRecentDiscussions&page=',m,sep=""))
   
-  # jump to a thread in a site
+  # jump to a thread in a site (9 threads/site)
   
-  for (h in 1: 9)
+  for (h in 1: 9) 
   { 
     if(m == 1){
       link <- diss %>% 
@@ -54,7 +61,7 @@ for (m in 1 : 207)
     
     print(link)
     
-    # jump to a thread
+   
     test <- logged_in %>% 
       jump_to(paste(link,'?page=1#comments',sep=""))
     
@@ -107,6 +114,7 @@ for (m in 1 : 207)
       html_children() %>% 
       html_attr("_maxpage") %>% 
       as.numeric()
+    
     # if thread only has 1 page
     if (length(last_page) == 0){
       
@@ -176,23 +184,27 @@ for (m in 1 : 207)
         
         
       }}
-    
-    
-    
+
   }
   
   
   tryCatch(
     {
-      writeDoc(mydoc, file = "E:/R/Menopause/List/List_8.docx")}, 
+      # For each 30 scraped sites, raw text files will be saved into a word document.
+      if (m %in% seq(from = 30, to = 210, by = 30) ) 
+        {
+        writeDoc(mydoc, file = paste(m,".docx", sep = ""))
+        
+        print(paste(m,"sites have been put into a word file", sep = " "))
+        }
+    }, 
+    
     error = function(e){"emoticon topic"}
   )
   
+  print(paste("site",m,"has been scraped",sep = " "))
+  
 }
-
-
-final <- Sys.time() - time
-# 
 
 
 
