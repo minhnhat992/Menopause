@@ -5,6 +5,8 @@ library(dplyr)
 library(tidyr)
 library(ReporteRs)
 
+# TEST for getting data for topic young and attractive
+
 # get the login url
 url2 <- "http://forum.menopausechitchat.com/main/authorization/signIn?target=http%3A%2F%2Fforum.menopausechitchat.com%2F"
 
