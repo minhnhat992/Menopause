@@ -5,6 +5,8 @@ library(dplyr)
 library(tidyr)
 library(ReporteRs)
 
+# TEST LOOP
+
 time <- Sys.time()
 
 # get the login url
